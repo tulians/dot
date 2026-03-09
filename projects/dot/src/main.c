@@ -60,7 +60,7 @@ int main(void) {
     // 1. Initialize Board, UART and Benchmark
     boardConfig();
     uartConfig(UART_USB, 115200);
-    benchmark_cycle_counter_enable();
+    benchmark_init();
 
     uartWriteString(UART_USB, "\r\n--- dot Matrix Stress Test: 50x50 ---\r\n");
 
@@ -78,13 +78,9 @@ int main(void) {
     uartWriteString(UART_USB, "Calculating 50x50 Multiplication (125k ops)...\r\n");
     matrix_row_callback = visible_toggle_callback;
 
-    benchmark_cycle_counter_reset();
-    uint32_t start_cycles = benchmark_get_cycle_count();
-
+    benchmark_start();
     matrix_multiply(&matrix_a, &matrix_b, &matrix_c);
-
-    uint32_t end_cycles = benchmark_get_cycle_count();
-    uint32_t total_cycles = end_cycles - start_cycles;
+    uint32_t total_cycles = benchmark_stop();
 
     // 4. Output Performance Results
     uartWriteString(UART_USB, "Calculation Finished!\r\n");

@@ -302,13 +302,14 @@ static ErrorCode_t CDC_ep0_override_hdlr(USBD_HANDLE_T hUsb, void *data, uint32_
 //	if (LPC_UART->IER & UART_IER_THREINT) {
 //		if (g_uCOM.txBuf_count > 0) {
 //			count = Chip_UART_Send(LPC_UART, &g_uCOM.txBuf[g_uCOM.txBuf_uartIndex],
-//g_uCOM.txBuf_count); 			g_uCOM.txBuf_count -= count; 			g_uCOM.txBuf_uartIndex += count;
+// g_uCOM.txBuf_count); 			g_uCOM.txBuf_count -= count;
+// g_uCOM.txBuf_uartIndex += count;
 //		}
 //		/* If UART tx is done allow USB RX to queue buffer on next OUT_NAK event */
 //		if (g_uCOM.txBuf_count < 1) {
 //			g_uCOM.txBuf_count = 0;
 //			USBD_API->hw->ReadReqEP(g_uCOM.hUsb, USB_CDC_OUT_EP, &g_uCOM.txBuf[0],
-//UCOM_TXBUF_SZ); 			g_uCOM.uartTxBusy = 1;
+// UCOM_TXBUF_SZ); 			g_uCOM.uartTxBusy = 1;
 //			/* all data transmitted on UART disable UART_IER_THREINT */
 //			Chip_UART_IntDisable(LPC_UART, UART_IER_THREINT);
 //		}
@@ -316,7 +317,7 @@ static ErrorCode_t CDC_ep0_override_hdlr(USBD_HANDLE_T hUsb, void *data, uint32_
 //
 //	/* Handle receive interrupt */
 //	count = Chip_UART_Read(LPC_UART, &g_uCOM.rxBuf[g_uCOM.rxBuf_uartIndex], UCOM_RXBUF_SZ -
-//g_uCOM.rxBuf_uartIndex);
+// g_uCOM.rxBuf_uartIndex);
 //
 //	if (count) {
 //		/* Note, following logic works if UCOM_RXBUF_SZ is 2^n size only. */
@@ -325,8 +326,8 @@ static ErrorCode_t CDC_ep0_override_hdlr(USBD_HANDLE_T hUsb, void *data, uint32_
 //		if ((g_uCOM.usbTxBusy == 0) && USB_IsConfigured(g_uCOM.hUsb)) {
 //			g_uCOM.usbTxBusy = 1;
 //			count = USBD_API->hw->WriteEP(g_uCOM.hUsb, USB_CDC_IN_EP,
-//&g_uCOM.rxBuf[g_uCOM.rxBuf_usbIndex], count); 			g_uCOM.rxBuf_usbIndex = (g_uCOM.rxBuf_usbIndex +
-//count) & (UCOM_RXBUF_SZ - 1);
+//&g_uCOM.rxBuf[g_uCOM.rxBuf_usbIndex], count); 			g_uCOM.rxBuf_usbIndex =
+//(g_uCOM.rxBuf_usbIndex + count) & (UCOM_RXBUF_SZ - 1);
 //		}
 //	}
 //

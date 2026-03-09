@@ -675,7 +675,7 @@ static void SetEsp8622Status(Esp8266Status_t status) {
     Esp8266Status = status;
     if (Esp8266DebugBaudRate > 0) {
         //		stdioPrintf(Esp8266DebugUart, "\n\rESP8266 State = %s\n\r",
-        //Esp8266StatusToString[status]);
+        // Esp8266StatusToString[status]);
     }
 }
 

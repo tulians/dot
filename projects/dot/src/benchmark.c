@@ -4,9 +4,9 @@
 #include "sapi.h"
 
 // Core Debug register addresses
-#define DWT_CYCCNT  (*(volatile uint32_t *)0xE0001004)
+#define DWT_CYCCNT (*(volatile uint32_t *)0xE0001004)
 #define DWT_CONTROL (*(volatile uint32_t *)0xE0001000)
-#define SCB_DEMCR   (*(volatile uint32_t *)0xE000EDFC)
+#define SCB_DEMCR (*(volatile uint32_t *)0xE000EDFC)
 
 void benchmark_init(void) {
     // Enable Trace and Debug (DEMCR bit 24)
@@ -33,6 +33,8 @@ void benchmark_reset(void) {
 // Dummy implementation for host-based tests
 void benchmark_init(void) {}
 void benchmark_start(void) {}
-uint32_t benchmark_stop(void) { return 0; }
+uint32_t benchmark_stop(void) {
+    return 0;
+}
 void benchmark_reset(void) {}
 #endif

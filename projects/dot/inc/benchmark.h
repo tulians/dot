@@ -25,4 +25,4 @@ uint32_t benchmark_stop(void);
  */
 void benchmark_reset(void);
 
-#endif // DOT_BENCHMARK_H
+#endif  // DOT_BENCHMARK_H

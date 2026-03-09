@@ -92,3 +92,22 @@ void sequential_forward(const SequentialModel* model, const Matrix* input, Matri
                             &buffers[layer_index]);
     }
 }
+
+void sequential_forward_with_workspace(const SequentialModel* model, const Matrix* input,
+                                       Matrix* workspace_a, Matrix* workspace_b, Matrix* output) {
+    Matrix* current_input = (Matrix*)input;
+    Matrix* current_output = workspace_a;
+
+    for (uint16_t i = 0; i < model->layer_count; i++) {
+        // If it's the last layer, write directly to final output
+        if (i == model->layer_count - 1) {
+            current_output = output;
+        }
+
+        dense_layer_forward(&model->layers[i], current_input, current_output);
+
+        // Ping-pong pointers for next layer
+        current_input = current_output;
+        current_output = (current_output == workspace_a) ? workspace_b : workspace_a;
+    }
+}

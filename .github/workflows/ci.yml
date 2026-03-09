@@ -1,0 +1,35 @@
+name: Embedded CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-arm-none-eabi make clang-format
+
+    - name: Check Code Formatting
+      run: |
+        make format
+        # Check if any files were changed by clang-format
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "Error: Code is not formatted according to .clang-format. Please run 'make format' locally."
+          git status
+          exit 1
+        fi
+
+    - name: Run Host Unit Tests (Unity)
+      run: make test
+
+    - name: Build Blinky for EDU-CIAA Board
+      run: make

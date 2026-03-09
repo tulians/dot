@@ -13,7 +13,7 @@ void (*matrix_row_callback)(uint16_t row) = NULL;
  * IMPLEMENTATION DESIGN:
  * - ARM Target: Delegates to CMSIS-DSP (arm_mat_mult_f32). This is the "Gold Standard"
  *   for the Cortex-M4, utilizing hand-optimized assembly and SIMD.
- * - Host Target: Uses a simple triple-loop fallback. This ensures the library is 
+ * - Host Target: Uses a simple triple-loop fallback. This ensures the library is
  *   unit-testable on Linux without requiring ARM-specific binaries.
  */
 void matrix_multiply(const Matrix* matrix_a, const Matrix* matrix_b, Matrix* result_matrix) {
@@ -41,7 +41,7 @@ void matrix_multiply(const Matrix* matrix_a, const Matrix* matrix_b, Matrix* res
 /**
  * Q15 IMPLEMENTATION DESIGN:
  * - Follows the same Target/Host split as the F32 version.
- * - ARM Target uses arm_mat_mult_q15, which handles the complex scaling 
+ * - ARM Target uses arm_mat_mult_q15, which handles the complex scaling
  *   needed for fixed-point math efficiently in hardware.
  */
 void matrix_multiply_q15(const MatrixQ15* matrix_a, const MatrixQ15* matrix_b,

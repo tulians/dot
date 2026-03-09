@@ -231,8 +231,8 @@ test:
 # Code formatting
 format:
 	@echo Formatting code...
-	$(Q)find projects -name "*.c" -o -name "*.h" | xargs clang-format -i
-	$(Q)find libs/sapi -name "*.c" -o -name "*.h" | xargs clang-format -i
+	$(Q)find projects -name "*.c" -o -name "*.h" | xargs -r clang-format -i
+	$(Q)find libs/sapi -name "*.c" -o -name "*.h" | xargs -r clang-format -i
 
 # Information
 .info:

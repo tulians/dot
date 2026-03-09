@@ -4,7 +4,7 @@
  *
  * DESIGN DECISIONS:
  * 1. Layer Abstraction: Encapsulates weights, biases, and activation for modularity.
- * 2. Workspace Strategy: Uses "Ping-Pong" buffers to run deep models with 
+ * 2. Workspace Strategy: Uses "Ping-Pong" buffers to run deep models with
  *    constant RAM overhead (only 2 intermediate buffers needed).
  * 3. Q15 Support: Parallel infrastructure for quantized (fixed-point) inference.
  */
@@ -14,11 +14,7 @@
 
 #include "matrix.h"
 
-typedef enum {
-    ACTIVATION_LINEAR,
-    ACTIVATION_RELU,
-    ACTIVATION_SIGMOID
-} ActivationType;
+typedef enum { ACTIVATION_LINEAR, ACTIVATION_RELU, ACTIVATION_SIGMOID } ActivationType;
 
 typedef struct {
     const Matrix* weights;

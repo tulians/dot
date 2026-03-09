@@ -5,7 +5,7 @@
  * DESIGN DECISIONS:
  * 1. Struct-based: Pairs metadata (rows/cols) with data for safety.
  * 2. Static-first: Macros enforce compile-time allocation to prevent heap fragmentation.
- * 3. Bank-aware: SRAM_BANK macros allow striping data across LPC4337 memory banks to 
+ * 3. Bank-aware: SRAM_BANK macros allow striping data across LPC4337 memory banks to
  *    maximize AHB bus throughput during heavy math.
  */
 

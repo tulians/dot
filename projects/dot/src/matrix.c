@@ -70,3 +70,29 @@ void matrix_multiply(const Matrix* matrix_a, const Matrix* matrix_b, Matrix* res
     }
 #endif
 }
+
+void matrix_multiply_q15(const MatrixQ15* matrix_a, const MatrixQ15* matrix_b,
+                         MatrixQ15* result_matrix) {
+#ifdef __arm__
+    arm_matrix_instance_q15 A = {matrix_a->rows, matrix_a->columns, matrix_a->data};
+    arm_matrix_instance_q15 B = {matrix_b->rows, matrix_b->columns, matrix_b->data};
+    arm_matrix_instance_q15 R = {result_matrix->rows, result_matrix->columns, result_matrix->data};
+
+    // Use CMSIS-DSP Q15 matrix multiplication
+    arm_mat_mult_q15(&A, &B, &R, NULL);
+#else
+    // Fallback: Simple Q15 multiplication for Host
+    for (uint16_t i = 0; i < matrix_a->rows; i++) {
+        for (uint16_t j = 0; j < matrix_b->columns; j++) {
+            int32_t sum = 0;
+            for (uint16_t k = 0; k < matrix_a->columns; k++) {
+                // Fixed-point multiply and accumulate (Q15 * Q15 -> Q30)
+                sum += (int32_t)matrix_a->data[i * matrix_a->columns + k] *
+                       matrix_b->data[k * matrix_b->columns + j];
+            }
+            // Scale back to Q15 (right shift by 15)
+            result_matrix->data[i * matrix_b->columns + j] = (int16_t)(sum >> 15);
+        }
+    }
+#endif
+}

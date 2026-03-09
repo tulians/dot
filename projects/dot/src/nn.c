@@ -11,11 +11,28 @@ void activation_relu(Matrix* matrix) {
     }
 }
 
+void activation_relu_q15(MatrixQ15* matrix) {
+    uint32_t total_elements = (uint32_t)matrix->rows * matrix->columns;
+    for (uint32_t element_index = 0; element_index < total_elements; element_index++) {
+        if (matrix->data[element_index] < 0) {
+            matrix->data[element_index] = 0;
+        }
+    }
+}
+
 static void add_biases(Matrix* matrix, const Matrix* biases) {
     // Assuming biases is a 1xN or Nx1 vector matching the output columns/rows
     uint32_t total_elements = (uint32_t)matrix->rows * matrix->columns;
     for (uint32_t element_index = 0; element_index < total_elements; element_index++) {
         // Simple element-wise addition (broadcasting logic can be added if needed)
+        matrix->data[element_index] += biases->data[element_index];
+    }
+}
+
+static void add_biases_q15(MatrixQ15* matrix, const MatrixQ15* biases) {
+    uint32_t total_elements = (uint32_t)matrix->rows * matrix->columns;
+    for (uint32_t element_index = 0; element_index < total_elements; element_index++) {
+        // Fixed point addition
         matrix->data[element_index] += biases->data[element_index];
     }
 }
@@ -35,6 +52,28 @@ void dense_layer_forward(const DenseLayer* layer, const Matrix* input_matrix,
     switch (layer->activation) {
         case ACTIVATION_RELU:
             activation_relu(output_matrix);
+            break;
+        case ACTIVATION_LINEAR:
+        default:
+            // Do nothing
+            break;
+    }
+}
+
+void dense_layer_forward_q15(const DenseLayerQ15* layer, const MatrixQ15* input_matrix,
+                             MatrixQ15* output_matrix) {
+    // 1. Perform Q15 Matrix Multiplication
+    matrix_multiply_q15(input_matrix, layer->weights, output_matrix);
+
+    // 2. Add Biases
+    if (layer->biases != NULL) {
+        add_biases_q15(output_matrix, layer->biases);
+    }
+
+    // 3. Apply Activation Function
+    switch (layer->activation) {
+        case ACTIVATION_RELU:
+            activation_relu_q15(output_matrix);
             break;
         case ACTIVATION_LINEAR:
         default:

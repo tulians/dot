@@ -9,17 +9,22 @@
  */
 void (*matrix_row_callback)(uint16_t row) = NULL;
 
+/**
+ * IMPLEMENTATION DESIGN:
+ * - ARM Target: Delegates to CMSIS-DSP (arm_mat_mult_f32). This is the "Gold Standard"
+ *   for the Cortex-M4, utilizing hand-optimized assembly and SIMD.
+ * - Host Target: Uses a simple triple-loop fallback. This ensures the library is 
+ *   unit-testable on Linux without requiring ARM-specific binaries.
+ */
 void matrix_multiply(const Matrix* matrix_a, const Matrix* matrix_b, Matrix* result_matrix) {
 #ifdef __arm__
-    // Hardware accelerated version using CMSIS-DSP
-    // This utilizes Cortex-M4 SIMD and FPU instructions.
     arm_matrix_instance_f32 A = {matrix_a->rows, matrix_a->columns, matrix_a->data};
     arm_matrix_instance_f32 B = {matrix_b->rows, matrix_b->columns, matrix_b->data};
     arm_matrix_instance_f32 R = {result_matrix->rows, result_matrix->columns, result_matrix->data};
 
-    arm_mat_mult_f32(&A, &B, &R);
+    arm_status status = arm_mat_mult_f32(&A, &B, &R);
+    (void)status;
 #else
-    // Standard C fallback for Host tests
     for (uint16_t i = 0; i < matrix_a->rows; i++) {
         for (uint16_t j = 0; j < matrix_b->columns; j++) {
             float sum = 0.0f;
@@ -33,17 +38,21 @@ void matrix_multiply(const Matrix* matrix_a, const Matrix* matrix_b, Matrix* res
 #endif
 }
 
+/**
+ * Q15 IMPLEMENTATION DESIGN:
+ * - Follows the same Target/Host split as the F32 version.
+ * - ARM Target uses arm_mat_mult_q15, which handles the complex scaling 
+ *   needed for fixed-point math efficiently in hardware.
+ */
 void matrix_multiply_q15(const MatrixQ15* matrix_a, const MatrixQ15* matrix_b,
                          MatrixQ15* result_matrix) {
 #ifdef __arm__
-    // Hardware accelerated fixed-point version
     arm_matrix_instance_q15 A = {matrix_a->rows, matrix_a->columns, matrix_a->data};
     arm_matrix_instance_q15 B = {matrix_b->rows, matrix_b->columns, matrix_b->data};
     arm_matrix_instance_q15 R = {result_matrix->rows, result_matrix->columns, result_matrix->data};
 
     arm_mat_mult_q15(&A, &B, &R, NULL);
 #else
-    // Fixed-point C fallback for Host tests
     for (uint16_t i = 0; i < matrix_a->rows; i++) {
         for (uint16_t j = 0; j < matrix_b->columns; j++) {
             int32_t sum = 0;

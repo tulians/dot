@@ -1,11 +1,28 @@
 #include "matrix.h"
 
+#ifdef __arm__
+#include "arm_math.h"
+#endif
+
 /**
  * @brief Progress callback for monitoring matrix operations.
  */
 void (*matrix_row_callback)(uint16_t row) = NULL;
 
 void matrix_multiply(const Matrix* matrix_a, const Matrix* matrix_b, Matrix* result_matrix) {
+#ifdef __arm__
+    // 1. Wrap custom Matrix into CMSIS-DSP arm_matrix_instance_f32
+    arm_matrix_instance_f32 A = {matrix_a->rows, matrix_a->columns, matrix_a->data};
+    arm_matrix_instance_f32 B = {matrix_b->rows, matrix_b->columns, matrix_b->data};
+    arm_matrix_instance_f32 R = {result_matrix->rows, result_matrix->columns, result_matrix->data};
+
+    // 2. Execute Hardware Accelerated Matrix Multiplication
+    // This utilizes Cortex-M4 SIMD and FPU instructions.
+    arm_status status = arm_mat_mult_f32(&A, &B, &R);
+
+    // Optional: handle status error if needed
+    (void)status;
+#else
     // 1. Zero out result matrix using a tight loop (compiler will likely use VST)
     uint32_t total_elements = (uint32_t)result_matrix->rows * result_matrix->columns;
     for (uint32_t element_index = 0; element_index < total_elements; element_index++) {
@@ -51,4 +68,5 @@ void matrix_multiply(const Matrix* matrix_a, const Matrix* matrix_b, Matrix* res
             }
         }
     }
+#endif
 }

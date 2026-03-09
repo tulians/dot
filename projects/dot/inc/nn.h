@@ -83,6 +83,21 @@ void dense_layer_forward_q15(const DenseLayerQ15* layer, const MatrixQ15* input_
 void sequential_forward(const SequentialModel* model, const Matrix* input, Matrix* buffers);
 
 /**
+ * @brief Performs a forward pass using only TWO intermediate buffers.
+ *
+ * This "Ping-Pong" strategy reuses memory by alternating between two workspace
+ * buffers, drastically reducing RAM requirements for deep models.
+ *
+ * @param model The sequential model configuration.
+ * @param input Initial input matrix.
+ * @param workspace_a First temporary buffer (must fit largest layer output).
+ * @param workspace_b Second temporary buffer (must fit largest layer output).
+ * @param output Final output matrix.
+ */
+void sequential_forward_with_workspace(const SequentialModel* model, const Matrix* input,
+                                       Matrix* workspace_a, Matrix* workspace_b, Matrix* output);
+
+/**
  * @brief In-place ReLU activation.
  *
  * Clips all values less than 0.0 to exactly 0.0.

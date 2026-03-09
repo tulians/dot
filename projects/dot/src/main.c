@@ -12,10 +12,10 @@
 
 #define MATRIX_SIZE 50
 
-// --- Data Buffers in different SRAM banks ---
-float data_a[MATRIX_SIZE * MATRIX_SIZE] SRAM_BANK_A;
-float data_b[MATRIX_SIZE * MATRIX_SIZE] SRAM_BANK_B;
-float data_c[MATRIX_SIZE * MATRIX_SIZE] SRAM_BANK_C;
+// --- Static Matrix Definitions using Bank placement ---
+DEFINE_MATRIX(matrix_a, MATRIX_SIZE, MATRIX_SIZE, SRAM_BANK_A);
+DEFINE_MATRIX(matrix_b, MATRIX_SIZE, MATRIX_SIZE, SRAM_BANK_B);
+DEFINE_MATRIX(matrix_c, MATRIX_SIZE, MATRIX_SIZE, SRAM_BANK_C);
 
 extern void (*matrix_row_callback)(uint16_t row);
 
@@ -66,13 +66,9 @@ int main(void) {
 
     // 2. Initialize input matrices with Random Values using our LCG
     for (int i = 0; i < MATRIX_SIZE * MATRIX_SIZE; i++) {
-        data_a[i] = (float)(pseudo_rand() % 100) / 10.0f;
-        data_b[i] = (float)(pseudo_rand() % 100) / 10.0f;
+        matrix_a.data[i] = (float)(pseudo_rand() % 100) / 10.0f;
+        matrix_b.data[i] = (float)(pseudo_rand() % 100) / 10.0f;
     }
-
-    Matrix matrix_a = {MATRIX_SIZE, MATRIX_SIZE, data_a};
-    Matrix matrix_b = {MATRIX_SIZE, MATRIX_SIZE, data_b};
-    Matrix matrix_c = {MATRIX_SIZE, MATRIX_SIZE, data_c};
 
     // 3. Perform Multiplication with Benchmarking
     uartWriteString(UART_USB, "Calculating 50x50 Multiplication (125k ops)...\r\n");
@@ -90,7 +86,7 @@ int main(void) {
 
     // Verify a sample result
     uartWriteString(UART_USB, "Result[0][0] (Whole part): ");
-    log_uint32((uint32_t)data_c[0]);
+    log_uint32((uint32_t)matrix_c.data[0]);
     uartWriteString(UART_USB, "\r\n");
 
     gpioWrite(LED_RED, OFF);

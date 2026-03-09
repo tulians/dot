@@ -39,6 +39,20 @@ typedef struct {
 } MatrixQ15;
 
 /**
+ * @name Static Allocation Macros
+ * Helpers to define matrices at compile-time with bank placement.
+ * @{
+ */
+#define DEFINE_MATRIX(name, r, c, bank) \
+    float name##_data[(r) * (c)] bank;  \
+    Matrix name = {r, c, name##_data}
+
+#define DEFINE_MATRIX_Q15(name, r, c, bank) \
+    int16_t name##_data[(r) * (c)] bank;    \
+    MatrixQ15 name = {r, c, name##_data}
+/** @} */
+
+/**
  * @brief Performs the most performant matrix multiplication for the hardware.
  * Uses IKJ loop reordering, 4x loop unrolling, and pointer arithmetic to
  * saturate the Cortex-M4F FPU pipeline and minimize AHB bus stalls.

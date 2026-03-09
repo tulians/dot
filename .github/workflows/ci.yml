@@ -2,9 +2,9 @@ name: Embedded CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
@@ -31,5 +31,5 @@ jobs:
     - name: Run Host Unit Tests (Unity)
       run: make test
 
-    - name: Build Blinky for EDU-CIAA Board
+    - name: Build dot for EDU-CIAA Board
       run: make

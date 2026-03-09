@@ -31,6 +31,15 @@ typedef struct {
 } DenseLayer;
 
 /**
+ * @brief Represents a single Dense (Fully Connected) Layer in Q15.
+ */
+typedef struct {
+    const MatrixQ15* weights;  /**< Weight matrix (InputSize x OutputSize) */
+    const MatrixQ15* biases;   /**< Bias matrix (1 x OutputSize) */
+    ActivationType activation; /**< Activation function to apply after multiplication */
+} DenseLayerQ15;
+
+/**
  * @brief Represents a Sequential model composed of a stack of layers.
  *
  * A sequential model provides a clear structure for running an input
@@ -54,6 +63,12 @@ void dense_layer_forward(const DenseLayer* layer, const Matrix* input_matrix,
                          Matrix* output_matrix);
 
 /**
+ * @brief Performs a forward pass through a single Q15 Dense Layer.
+ */
+void dense_layer_forward_q15(const DenseLayerQ15* layer, const MatrixQ15* input_matrix,
+                             MatrixQ15* output_matrix);
+
+/**
  * @brief Performs a forward pass through a complete Sequential model.
  *
  * Iteratively calculates the output for each layer, feeding the result
@@ -75,5 +90,10 @@ void sequential_forward(const SequentialModel* model, const Matrix* input, Matri
  * @param matrix Matrix to apply the activation to.
  */
 void activation_relu(Matrix* matrix);
+
+/**
+ * @brief In-place Q15 ReLU activation.
+ */
+void activation_relu_q15(MatrixQ15* matrix);
 
 #endif  // NN_H
